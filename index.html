@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 면접 체험하기 | 중학교 과학교실</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Evaluation Visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Fonts (Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Noto Sans KR', 'sans-serif'] },
+                    colors: {
+                        sky: { 50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc', 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 800: '#075985', 900: '#0c4a6e' },
+                        blue: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; } /* light slate/white */
+        .webcam-overlay {
+            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(255,255,255,0.4) 100%);
+        }
+        .scan-line {
+            height: 3px;
+            background: rgba(14, 165, 233, 0.6);
+            box-shadow: 0 0 10px #0ea5e9;
+            animation: scan 2.5s ease-in-out infinite alternate;
+        }
+        @keyframes scan {
+            0% { top: 10%; }
+            100% { top: 85%; }
+        }
+        .pulse-red { animation: pulseRed 1.5s infinite; }
+        @keyframes pulseRed {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        /* Custom scrollbar for textareas */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col font-sans">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-400 to-blue-500 flex items-center justify-center font-bold text-xl text-white shadow-md">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-sky-100 text-sky-700 text-xs px-2 py-0.5 rounded-full font-bold">과학 SSI 탐구</span>
+                    </div>
+                    <h1 class="text-lg font-bold text-slate-800 tracking-tight">AI 면접 모의 체험 <span class="text-slate-500 text-sm font-normal">| 나는 면접을 통과할 수 있을까?</span></h1>
+                </div>
+            </div>
+            <!-- Progress indicator dots (mobile friendly) -->
+            <div class="flex items-center gap-1.5 md:gap-2 text-slate-300 text-xs md:text-sm">
+                <i id="nav-dot-1" class="fa-solid fa-circle text-sky-500"></i>
+                <i class="fa-solid fa-minus"></i>
+                <i id="nav-dot-2" class="fa-solid fa-circle"></i>
+                <i class="fa-solid fa-minus"></i>
+                <i id="nav-dot-3" class="fa-solid fa-circle"></i>
+                <i class="fa-solid fa-minus"></i>
+                <i id="nav-dot-4" class="fa-solid fa-circle"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col gap-6">
+
+        <!-- SECTION 1: Intro Page -->
+        <section id="step-1" class="step-section flex flex-col items-center justify-center min-h-[70vh] gap-8">
+            <div class="text-center space-y-4">
+                <div class="inline-block p-4 rounded-full bg-sky-50 border-4 border-sky-100 mb-2">
+                    <i class="fa-solid fa-users-viewfinder text-5xl text-sky-500"></i>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800 leading-tight">
+                    실전 AI 면접 체험하기
+                </h2>
+                <p class="text-slate-500 text-sm md:text-base max-w-lg mx-auto leading-relaxed">
+                    최근 고등학교 입시와 기업 채용에서 AI 면접관이 도입되고 있습니다.<br>
+                    AI는 나의 <strong>표정, 목소리, 답변 내용</strong>을 실시간으로 분석합니다.<br>
+                    준비가 되었다면, 카메라를 켜고 인공지능 면접관을 만나보세요!
+                </p>
+            </div>
+
+            <button onclick="switchStep(2)" class="group px-8 py-4 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white font-bold text-lg md:text-xl rounded-2xl shadow-xl shadow-sky-500/30 transition transform hover:-translate-y-1 flex items-center gap-3">
+                <span>AI 면접 체험 시작하기</span>
+                <i class="fa-solid fa-arrow-right-to-bracket group-hover:translate-x-1 transition"></i>
+            </button>
+            
+            <div class="text-xs text-slate-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-halved"></i>
+                수집된 영상 및 음성 데이터는 체험 직후 즉시 폐기됩니다.
+            </div>
+        </section>
+
+        <!-- SECTION 2: Profile Setup -->
+        <section id="step-2" class="step-section hidden flex-col gap-6">
+            <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-200 shadow-sm space-y-6 max-w-3xl mx-auto w-full">
+                <div class="text-center border-b border-slate-100 pb-4">
+                    <span class="text-sky-500 text-xs font-bold uppercase tracking-wider bg-sky-50 px-3 py-1 rounded-full">Step 1</span>
+                    <h2 class="text-2xl font-bold text-slate-800 mt-3">나의 지원 프로필 설정</h2>
+                    <p class="text-sm text-slate-500 mt-1">내가 진학하고자 하는 고등학교 유형을 선택하면 맞춤형 질문이 나옵니다.</p>
+                </div>
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-sm text-slate-700 font-bold mb-2"><i class="fa-solid fa-user text-sky-500 mr-2"></i>이름 (또는 별명)</label>
+                        <input type="text" id="student-name" placeholder="홍길동" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm text-slate-700 font-bold mb-2"><i class="fa-solid fa-school text-sky-500 mr-2"></i>목표 고등학교 유형</label>
+                        <select id="school-type" onchange="updateQuestionPreview()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition font-medium">
+                            <option value="general">🏫 일반계 고등학교 (기본 인성 및 진로)</option>
+                            <option value="science">🔬 과학고 / 영재학교 (과학·수학 탐구 역량)</option>
+                            <option value="foreign">🌐 외고 / 국제고 (글로벌 역량 및 어학)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Preview Area -->
+                <div class="bg-sky-50/50 p-5 rounded-2xl border border-sky-100 mt-4">
+                    <h3 class="text-sm font-bold text-sky-700 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-clipboard-question"></i> 출제 예상 질문 미리보기 (총 3문항)
+                    </h3>
+                    <ul id="question-preview-list" class="space-y-3 text-sm text-slate-600">
+                        <!-- Dynamic -->
+                    </ul>
+                </div>
+
+                <div class="flex justify-between items-center pt-6">
+                    <button onclick="switchStep(1)" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl text-sm font-bold transition">
+                        이전으로
+                    </button>
+                    <button onclick="startInterviewSession()" class="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-lg shadow-sky-200 transition flex items-center gap-2">
+                        <span>면접실 입장하기</span>
+                        <i class="fa-solid fa-video"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: AI Interview Room -->
+        <section id="step-3" class="step-section hidden flex-col gap-4 md:gap-6">
+            <div class="bg-white p-4 rounded-xl border border-sky-100 flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500 pulse-red"></span>
+                    <span class="text-sm font-bold text-slate-800">AI 실시간 평가 진행 중</span>
+                </div>
+                <div class="text-sm font-bold text-slate-500" id="question-badge">질문 1 / 3</div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Webcam Viewport -->
+                <div class="bg-slate-900 rounded-3xl overflow-hidden relative shadow-lg min-h-[300px] md:min-h-[400px] flex flex-col justify-center border-4 border-slate-800">
+                    <video id="webcam-video" autoplay playsinline muted class="w-full h-full object-cover scale-x-[-1]"></video>
+                    
+                    <div id="video-fallback" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-slate-800 text-slate-400 gap-4 p-6 text-center">
+                        <i class="fa-solid fa-camera-slash text-5xl"></i>
+                        <p class="text-sm">카메라 권한이 허용되지 않았거나 장치가 없습니다.<br>오디오(STT) 및 텍스트 모드로 면접을 진행합니다.</p>
+                        <button onclick="toggleWebcam()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg text-xs font-bold transition">권한 다시 시도</button>
+                    </div>
+
+                    <!-- AI HUD Overlays -->
+                    <div class="absolute inset-0 pointer-events-none webcam-overlay p-4 flex flex-col justify-between">
+                        <div class="scan-line absolute left-0 right-0"></div>
+                        <!-- HUD Stats -->
+                        <div class="flex justify-between font-mono text-[10px] md:text-xs text-sky-300 drop-shadow-md">
+                            <span>FACE_TRACKING_ON</span>
+                            <span id="timer-display" class="text-white bg-slate-800/80 px-2 py-1 rounded-md text-sm md:text-base font-bold">01:00</span>
+                        </div>
+                        
+                        <!-- Face Box -->
+                        <div class="w-40 h-48 border border-sky-400/50 rounded-2xl absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-start justify-center p-1 shadow-[0_0_10px_rgba(14,165,233,0.2)]">
+                            <span class="bg-sky-500/80 text-white text-[10px] px-2 py-0.5 rounded-full mt-2 backdrop-blur">자세 분석 중</span>
+                        </div>
+
+                        <div class="mt-auto bg-slate-800/60 backdrop-blur p-2 rounded-lg text-[10px] text-sky-200 self-start border border-slate-700">
+                            눈동자 움직임 / 입모양 스캔 활성화
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Control Panel -->
+                <div class="flex flex-col gap-4">
+                    <!-- Current Question -->
+                    <div class="bg-sky-50 p-5 rounded-2xl border border-sky-200">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold text-sky-600 bg-sky-100 px-2.5 py-1 rounded-full"><i class="fa-solid fa-clipboard-user mr-1"></i>면접관의 질문</span>
+                            <button onclick="speakCurrentQuestion()" class="text-xs text-slate-500 hover:text-sky-600 transition bg-white px-2 py-1 rounded shadow-sm border border-slate-200">
+                                <i class="fa-solid fa-volume-high"></i> 다시 듣기
+                            </button>
+                        </div>
+                        <p id="current-question-text" class="text-lg md:text-xl font-bold text-slate-800 leading-snug">
+                            질문을 불러오는 중입니다...
+                        </p>
+                    </div>
+
+                    <!-- Answer Input Box -->
+                    <div class="flex-1 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="text-sm font-bold text-slate-700">나의 답변 작성란</label>
+                            <button id="stt-btn" onclick="toggleSTT()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-3 py-1.5 rounded-lg border border-slate-200 transition flex items-center gap-1.5 font-bold">
+                                <i class="fa-solid fa-microphone"></i> <span id="stt-btn-text">마이크 켜기 (음성 입력)</span>
+                            </button>
+                        </div>
+
+                        <textarea id="answer-input" placeholder="마이크로 대답하거나 키보드로 직접 입력하세요. (침묵하거나 너무 짧은 대답은 큰 감점을 받습니다!)" class="w-full flex-1 bg-slate-50 border border-slate-300 rounded-xl p-4 text-sm text-slate-800 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 resize-none leading-relaxed min-h-[120px]"></textarea>
+
+                        <button onclick="submitAnswerAndNext()" class="mt-4 w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-md transition text-sm md:text-base flex items-center justify-center gap-2">
+                            <span>답변 완료 및 제출하기</span>
+                            <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: Evaluation Dashboard (Strict Scoring) -->
+        <section id="step-4" class="step-section hidden flex-col gap-6">
+            <!-- Loading Indicator -->
+            <div id="ai-loading" class="bg-white p-12 rounded-3xl border border-slate-200 shadow-sm text-center flex flex-col items-center justify-center gap-5 min-h-[400px]">
+                <div class="w-16 h-16 border-4 border-sky-100 border-t-sky-500 rounded-full animate-spin"></div>
+                <div class="space-y-2">
+                    <h3 class="text-xl font-bold text-slate-800">AI가 답변과 표정을 엄격하게 채점 중입니다...</h3>
+                    <p class="text-sm text-slate-500">감점 요소(짧은 답변, 논리 부족, 시선 불안정)를 깐깐하게 분석하고 있습니다.</p>
+                </div>
+            </div>
+
+            <!-- Result Dashboard -->
+            <div id="ai-result-content" class="hidden flex-col gap-6 w-full">
+                <!-- Header Score -->
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="text-center md:text-left space-y-2">
+                        <span class="bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full font-bold">AI 모의 면접 평가표</span>
+                        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800"><span id="res-student-name" class="text-sky-600">홍길동</span> 학생의 면접 결과</h2>
+                        <p class="text-sm text-slate-500">지원 분야: <span id="res-target-school" class="font-bold text-slate-700">일반계 고등학교</span></p>
+                    </div>
+
+                    <div class="bg-slate-50 px-8 py-5 rounded-2xl border border-slate-200 text-center shadow-inner">
+                        <div class="text-sm font-bold text-slate-500 mb-1">최종 종합 점수</div>
+                        <div class="text-5xl font-extrabold" id="res-total-score-box">
+                            <span id="res-total-score" class="text-sky-600">0</span><span class="text-xl text-slate-400"> / 100</span>
+                        </div>
+                        <div id="res-pass-fail" class="mt-2 text-xs font-bold px-3 py-1 rounded-full bg-slate-200 text-slate-600">평가 상태</div>
+                    </div>
+                </div>
+
+                <!-- Detail Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <!-- Radar Chart -->
+                    <div class="lg:col-span-5 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col items-center">
+                        <h3 class="text-base font-bold text-slate-800 mb-4 self-start"><i class="fa-solid fa-chart-radar text-sky-500 mr-2"></i>영역별 분석 그래프</h3>
+                        <div class="w-full max-w-[300px] h-[300px]">
+                            <canvas id="radarChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Strict Feedbacks -->
+                    <div class="lg:col-span-7 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col gap-4">
+                        <h3 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2">
+                            <i class="fa-solid fa-clipboard-check text-blue-500 mr-2"></i>세부 평가 및 감점 내역
+                        </h3>
+                        
+                        <div class="space-y-3 flex-1 overflow-y-auto">
+                            <!-- Content/Logic -->
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-slate-800 text-sm">📝 발표 내용 및 논리력</span>
+                                    <span id="score-logic" class="font-bold text-sky-600 bg-sky-100 px-2 py-0.5 rounded text-xs">0점</span>
+                                </div>
+                                <p id="feedback-logic" class="text-sm text-slate-600 leading-relaxed">분석 중...</p>
+                            </div>
+
+                            <!-- Attitude -->
+                            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-slate-800 text-sm">🧑‍💼 발표 태도 및 성실성</span>
+                                    <span id="score-attitude" class="font-bold text-sky-600 bg-sky-100 px-2 py-0.5 rounded text-xs">0점</span>
+                                </div>
+                                <p id="feedback-attitude" class="text-sm text-slate-600 leading-relaxed">분석 중...</p>
+                            </div>
+
+                            <!-- Pronunciation & Expression (AI Simulated) -->
+                            <div class="bg-rose-50 p-4 rounded-xl border border-rose-100">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="font-bold text-rose-800 text-sm"><i class="fa-solid fa-triangle-exclamation mr-1"></i> AI가 감지한 감점 요인 (표정/발음)</span>
+                                </div>
+                                <p id="feedback-flaw" class="text-sm text-rose-700 leading-relaxed font-medium">
+                                    분석 중...
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end pt-2">
+                    <button onclick="switchStep(1)" class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-md transition">
+                        처음으로 돌아가기
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Alert Modal -->
+    <div id="custom-alert" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 max-w-sm w-full rounded-2xl p-6 text-center space-y-4 shadow-2xl transform scale-100 transition-all">
+            <div id="alert-icon" class="w-14 h-14 rounded-full bg-sky-100 text-sky-500 flex items-center justify-center text-2xl mx-auto">
+                <i class="fa-solid fa-bell"></i>
+            </div>
+            <div>
+                <h3 id="alert-title" class="text-lg font-bold text-slate-800">알림</h3>
+                <p id="alert-msg" class="text-sm text-slate-500 mt-2 leading-relaxed">내용</p>
+            </div>
+            <button onclick="closeAlertModal()" class="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl mt-2 transition">확인</button>
+        </div>
+    </div>
+
+    <script>
+        // Global State Variables
+        let currentStep = 1;
+        let interviewQuestions = [];
+        let currentQuestionIndex = 0;
+        let userAnswers = [];
+        let mediaStream = null;
+        let recognition = null;
+        let isSTTActive = false;
+        let timerInterval = null;
+        let timeLeft = 60;
+        let radarChartInstance = null;
+
+        // Middle School level Question Bank (1-minute practice)
+        const questionBank = {
+            general: [
+                "우리 고등학교에 진학하기 위해 본인을 1분간 간단히 자기소개 해주세요.",
+                "본교에 지원하게 된 가장 큰 동기나 계기는 무엇인가요?",
+                "고등학교 진학 후 3년 동안 꼭 이루고 싶은 목표 하나와 그 이유를 말해주세요."
+            ],
+            science: [
+                "평소 가장 좋아하거나 관심 있는 과학 분야는 무엇이며, 그 이유는 무엇인가요?",
+                "최근 가장 흥미롭게 본 과학 뉴스나 일상 속 과학 현상에 대해 설명해 보세요.",
+                "과학 실험이나 탐구 활동 중 실패를 겪었던 경험과, 이를 어떻게 극복했는지 말해주세요."
+            ],
+            foreign: [
+                "가장 흥미를 느끼는 외국어는 무엇이며, 그 언어를 공부하면서 느낀 매력은 무엇인가요?",
+                "서로 다른 문화를 가진 사람과 소통할 때 가장 중요하게 생각하는 본인만의 태도는 무엇인가요?",
+                "최근 관심 있게 지켜본 글로벌 이슈(환경, 인권 등) 중 하나를 골라 본인의 생각을 말해주세요."
+            ]
+        };
+
+        // Initialize App
+        window.onload = function() {
+            updateQuestionPreview();
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.getVoices();
+            }
+        };
+
+        // Navigation Function
+        function switchStep(stepNum) {
+            document.querySelectorAll('.step-section').forEach(sec => {
+                sec.classList.add('hidden');
+                sec.classList.remove('flex');
+            });
+            
+            const targetSec = document.getElementById(`step-${stepNum}`);
+            targetSec.classList.remove('hidden');
+            targetSec.classList.add('flex');
+
+            // Update Header dots
+            for(let i=1; i<=4; i++) {
+                const dot = document.getElementById(`nav-dot-${i}`);
+                if (dot) {
+                    dot.className = i <= stepNum ? "fa-solid fa-circle text-sky-500" : "fa-solid fa-circle text-slate-200";
+                }
+            }
+
+            // Cleanup if leaving interview
+            if (stepNum !== 3 && mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+                if(isSTTActive) toggleSTT();
+            }
+
+            currentStep = stepNum;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Preview Question Update
+        function updateQuestionPreview() {
+            const type = document.getElementById('school-type').value;
+            const list = document.getElementById('question-preview-list');
+            list.innerHTML = '';
+            
+            questionBank[type].forEach((q, idx) => {
+                list.innerHTML += `<li class="flex items-start gap-2"><span class="font-bold text-sky-500 mt-0.5">Q${idx+1}.</span> <span>${q}</span></li>`;
+            });
+        }
+
+        // Modals
+        function alertModal(title, msg) {
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-msg').innerText = msg;
+            document.getElementById('custom-alert').classList.remove('hidden');
+            document.getElementById('custom-alert').classList.add('flex');
+        }
+
+        function closeAlertModal() {
+            document.getElementById('custom-alert').classList.add('hidden');
+            document.getElementById('custom-alert').classList.remove('flex');
+        }
+
+        async function startInterviewSession() {
+            const type = document.getElementById('school-type').value;
+            const name = document.getElementById('student-name').value.trim();
+            if(!name) {
+                alertModal("입력 확인", "이름을 입력해주세요.");
+                return;
+            }
+
+            interviewQuestions = questionBank[type];
+            currentQuestionIndex = 0;
+            userAnswers = [];
+
+            switchStep(3);
+            await initWebcam();
+            loadQuestion(0);
+        }
+
+        async function initWebcam() {
+            const videoElem = document.getElementById('webcam-video');
+            const fallback = document.getElementById('video-fallback');
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                videoElem.srcObject = mediaStream;
+                fallback.classList.add('hidden');
+            } catch (err) {
+                console.warn("카메라 접근 불가:", err);
+                fallback.classList.remove('hidden');
+            }
+        }
+
+        function toggleWebcam() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            initWebcam();
+        }
+
+        // Question Management & TTS
+        function loadQuestion(index) {
+            currentQuestionIndex = index;
+            document.getElementById('question-badge').innerText = `질문 ${index + 1} / ${interviewQuestions.length}`;
+            document.getElementById('current-question-text').innerText = interviewQuestions[index];
+            document.getElementById('answer-input').value = '';
+            
+            if(isSTTActive) toggleSTT(); // reset STT state
+            
+            speakCurrentQuestion();
+            resetTimer();
+        }
+
+        function speakCurrentQuestion() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const text = document.getElementById('current-question-text').innerText;
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'ko-KR';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timeLeft = 60;
+            updateTimerDisplay();
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitAnswerAndNext(true); // timeout submission
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const sec = timeLeft < 10 ? `0${timeLeft}` : `${timeLeft}`;
+            const display = document.getElementById('timer-display');
+            display.innerText = `00:${sec}`;
+            if(timeLeft <= 10) display.classList.add('text-red-400');
+            else display.classList.remove('text-red-400');
+        }
+
+        function toggleSTT() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alertModal("지원 불가", "현재 사용중인 브라우저는 음성 인식(STT)을 지원하지 않습니다. 텍스트로 직접 입력해주세요.");
+                return;
+            }
+
+            const btn = document.getElementById('stt-btn');
+            const btnText = document.getElementById('stt-btn-text');
+
+            if (isSTTActive) {
+                if (recognition) recognition.stop();
+                isSTTActive = false;
+                btnText.innerText = "마이크 켜기 (음성 입력)";
+                btn.classList.remove('bg-red-500', 'text-white', 'border-red-600', 'hover:bg-red-600');
+                btn.classList.add('bg-slate-100', 'text-slate-600');
+            } else {
+                recognition = new SpeechRecognition();
+                recognition.lang = 'ko-KR';
+                recognition.continuous = true;
+                recognition.interimResults = true;
+
+                recognition.onresult = function(event) {
+                    let transcript = '';
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        transcript += event.results[i][0].transcript;
+                    }
+                    const input = document.getElementById('answer-input');
+                    // append or replace based on logic, here we simply append
+                    if(event.results[event.results.length-1].isFinal) {
+                       input.value = input.value ? input.value + " " + transcript : transcript;
+                    } else {
+                        // For interim, it's complex to manage inline without wiping previous text, 
+                        // so for stability in this simple UI, we replace value if it was empty, else append safely.
+                        // To keep it simple: just overwrite while talking if user didn't type.
+                        if(!input.value.includes(transcript.trim())) {
+                             input.value = transcript;
+                        }
+                    }
+                };
+
+                recognition.start();
+                isSTTActive = true;
+                btnText.innerText = "마이크 끄기 (음성 인식 중...)";
+                btn.classList.add('bg-red-500', 'text-white', 'border-red-600', 'hover:bg-red-600');
+                btn.classList.remove('bg-slate-100', 'text-slate-600');
+            }
+        }
+
+        function submitAnswerAndNext(isTimeout = false) {
+            clearInterval(timerInterval);
+            if (isSTTActive && recognition) toggleSTT();
+
+            const text = document.getElementById('answer-input').value.trim();
+            userAnswers.push({
+                question: interviewQuestions[currentQuestionIndex],
+                answer: text,
+                timeTaken: 60 - timeLeft
+            });
+
+            if (currentQuestionIndex + 1 < interviewQuestions.length) {
+                if(isTimeout) alertModal("시간 초과", "답변 시간이 초과되어 다음 질문으로 넘어갑니다.");
+                loadQuestion(currentQuestionIndex + 1);
+            } else {
+                if(isTimeout) alertModal("면접 종료", "답변 시간이 초과되어 면접이 종료되었습니다.");
+                finishInterview();
+            }
+        }
+
+        async function finishInterview() {
+            switchStep(4);
+            document.getElementById('ai-loading').classList.remove('hidden');
+            document.getElementById('ai-result-content').classList.add('hidden');
+            document.getElementById('ai-result-content').classList.remove('flex');
+
+            const name = document.getElementById('student-name').value || "학생";
+            const sel = document.getElementById('school-type');
+            const targetSchool = sel.options[sel.selectedIndex].text;
+
+            document.getElementById('res-student-name').innerText = name;
+            document.getElementById('res-target-school').innerText = targetSchool;
+
+            const evalResult = await processStrictEvaluation(name, targetSchool, userAnswers);
+            renderResult(evalResult);
+        }
+
+        // Strict Local Evaluation Check + Mock Gemini Call
+        async function processStrictEvaluation(name, school, answers) {
+            // 1. Pre-calculate answer length to enforce strict grading
+            let totalLength = 0;
+            let emptyCount = 0;
+            answers.forEach(a => {
+                if (a.answer.length < 5) emptyCount++;
+                totalLength += a.answer.length;
+            });
+
+            // 2. Local Strict Penalty Logic
+            if (totalLength < 30 || emptyCount >= 2) {
+                // 매우 불성실한 답변인 경우 세부 항목 모두 낮은 점수(15~35점 사이) 부여
+                let contentScore = Math.floor(Math.random() * 10) + 15; // 15~25
+                let logicScore = Math.floor(Math.random() * 10) + 15;   // 15~25
+                let attitudeScore = Math.floor(Math.random() * 10) + 20; // 20~30
+                let faceScore = Math.floor(Math.random() * 15) + 20;    // 20~35
+                let voiceScore = Math.floor(Math.random() * 15) + 15;   // 15~30
+                
+                // 5개 영역 점수의 평균을 최종 종합 점수로 산출
+                let total = Math.floor((contentScore + logicScore + attitudeScore + faceScore + voiceScore) / 5);
+
+                return {
+                    total: total,
+                    scores: { content: contentScore, logic: logicScore, attitude: attitudeScore, voice: voiceScore, face: faceScore },
+                    feedbackLogic: "제출된 답변이 너무 짧거나 없습니다. 면접에서 침묵은 가장 치명적인 감점 요인입니다. 준비된 내용을 자신감 있게 말하는 연습이 필요합니다.",
+                    feedbackAttitude: "면접에 임하는 성실도가 매우 낮게 평가되었습니다. 답변 작성을 포기하거나 단답형으로 끝맺지 않도록 주의하세요.",
+                    feedbackFlaw: "[표정 및 음성 분석 에러] 답변이 거의 없어 음성을 제대로 분석할 수 없으며, 시선이 바닥을 향하거나 당황한 표정으로 인식되어 큰 감점을 받았습니다."
+                };
+            }
+
+            // 3. Simulated API Call (Since we can't guarantee API key presence in this sandbox context)
+            // In a real environment, this would call Gemini. Here we simulate a realistic "strict" AI response.
+            await new Promise(res => setTimeout(res, 2500)); // Fake loading delay
+            
+            // Calculate pseudo-realistic scores based on length
+            let baseScore = Math.min(95, 40 + (totalLength / 10)); // Max out length benefit
+            let contentScore = Math.floor(baseScore - (Math.random()*10));
+            let logicScore = Math.floor(baseScore - (Math.random()*15));
+            let attitudeScore = Math.floor(80 + (Math.random()*15)); // AI usually generous here unless explicitly instructed
+            let faceScore = Math.floor(70 + (Math.random()*25)); // Simulated face
+            let voiceScore = Math.floor(75 + (Math.random()*20)); // Simulated voice
+
+            // 5개 영역 점수의 평균을 최종 종합 점수로 산출
+            let total = Math.floor((contentScore + logicScore + attitudeScore + faceScore + voiceScore) / 5);
+
+            return {
+                total: total,
+                scores: { content: contentScore, logic: logicScore, attitude: attitudeScore, voice: voiceScore, face: faceScore },
+                feedbackLogic: `지원동기와 목표를 언급했으나, 주장(결론)에 대한 구체적인 '이유'나 '경험'이 다소 부족합니다. 질문의 의도에 맞게 경험을 덧붙이면 논리 점수가 오를 것입니다.`,
+                feedbackAttitude: `전반적인 답변 분량은 양호하며 대답하려는 의지가 보입니다. 다만 긴장한 탓인지 문장 끝맺음이 흐려지거나 중언부언하는 경향이 있습니다.`,
+                feedbackFlaw: `[AI 행동 분석] 면접 중 약 ${Math.floor(Math.random()*3)+2}회 시선이 카메라 밖을 향했습니다. AI는 이를 '자신감 부족' 또는 '부정행위'로 오인하여 시선 처리 항목에서 크게 감점(${100 - faceScore}점 감점)했습니다. 발음 시 '어...', '음...' 과 같은 추임새가 인식되어 유창성 점수도 깎였습니다.`
+            };
+        }
+
+        function renderResult(data) {
+            document.getElementById('ai-loading').classList.add('hidden');
+            const content = document.getElementById('ai-result-content');
+            content.classList.remove('hidden');
+            content.classList.add('flex');
+
+            // Set scores
+            const scoreDisplay = document.getElementById('res-total-score');
+            scoreDisplay.innerText = data.total;
+            
+            // Color code total score
+            const scoreBox = document.getElementById('res-total-score-box');
+            const passFail = document.getElementById('res-pass-fail');
+            
+            scoreBox.className = "text-5xl font-extrabold";
+            if (data.total >= 80) {
+                scoreBox.classList.add('text-blue-600');
+                passFail.innerText = "합격 가능성 높음 (우수)";
+                passFail.className = "mt-2 text-xs font-bold px-3 py-1 rounded-full bg-blue-100 text-blue-700";
+            } else if (data.total >= 60) {
+                scoreBox.classList.add('text-amber-500');
+                passFail.innerText = "노력 요망 (보통)";
+                passFail.className = "mt-2 text-xs font-bold px-3 py-1 rounded-full bg-amber-100 text-amber-700";
+            } else {
+                scoreBox.classList.add('text-red-500');
+                passFail.innerText = "불합격 위기 (매우 미흡)";
+                passFail.className = "mt-2 text-xs font-bold px-3 py-1 rounded-full bg-red-100 text-red-700";
+            }
+
+            // 만점 기준(100점)을 명시하여 직관적으로 수정
+            document.getElementById('score-logic').innerText = `${Math.floor((data.scores.content + data.scores.logic)/2)} / 100점`;
+            document.getElementById('score-attitude').innerText = `${data.scores.attitude} / 100점`;
+            
+            document.getElementById('feedback-logic').innerText = data.feedbackLogic;
+            document.getElementById('feedback-attitude').innerText = data.feedbackAttitude;
+            document.getElementById('feedback-flaw').innerText = data.feedbackFlaw;
+
+            renderRadarChart(data.scores);
+        }
+
+        function renderRadarChart(scores) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (radarChartInstance) radarChartInstance.destroy();
+
+            radarChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['답변 내용', '논리성', '발표 태도', '발음/유창성', '시선/표정'],
+                    datasets: [{
+                        label: 'AI 평가 점수',
+                        data: [scores.content, scores.logic, scores.attitude, scores.voice, scores.face],
+                        backgroundColor: 'rgba(14, 165, 233, 0.2)', // sky-500 with opacity
+                        borderColor: '#0ea5e9', // sky-500
+                        borderWidth: 2,
+                        pointBackgroundColor: '#3b82f6', // blue-500
+                        pointRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            min: 0,
+                            max: 100,
+                            ticks: { stepSize: 20, display: false },
+                            grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: { color: '#475569', font: { size: 11, weight: 'bold', family: "'Noto Sans KR', sans-serif" } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
