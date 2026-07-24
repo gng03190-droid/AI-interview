@@ -131,6 +131,8 @@
                         <label class="block text-sm text-slate-700 font-bold mb-2"><i class="fa-solid fa-school text-sky-500 mr-2"></i>목표 고등학교 유형</label>
                         <select id="school-type" onchange="updateQuestionPreview()" class="w-full bg-slate-50 border border-slate-300 rounded-xl px-4 py-3 text-slate-800 focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 transition font-medium">
                             <option value="general">🏫 일반계 고등학교 (기본 인성 및 진로)</option>
+                            <option value="nation_jasa">🏰 전국단위 자사고 (하나고, 외대부고, 상산고 등)</option>
+                            <option value="local_jasa">🏢 광역단위 자사고 (중동고, 휘문고, 세화고 등)</option>
                             <option value="science">🔬 과학고 / 영재학교 (과학·수학 탐구 역량)</option>
                             <option value="foreign">🌐 외고 / 국제고 (글로벌 역량 및 어학)</option>
                         </select>
@@ -356,6 +358,16 @@
                 "우리 고등학교에 진학하기 위해 본인을 1분간 간단히 자기소개 해주세요.",
                 "본교에 지원하게 된 가장 큰 동기나 계기는 무엇인가요?",
                 "고등학교 진학 후 3년 동안 꼭 이루고 싶은 목표 하나와 그 이유를 말해주세요."
+            ],
+            nation_jasa: [
+                "우리 학교는 기숙사 생활 등 공동체 활동이 많습니다. 친구들과 의견 충돌이 발생했을 때 이를 해결했던 본인만의 경험을 말해보세요.",
+                "중학교 시절 스스로 계획을 세우고 실천했던 '자기주도학습' 경험 중 가장 기억에 남는 성공 또는 실패 사례를 설명해주세요.",
+                "본교의 다양한 선택형 교육과정 중 본인의 진로와 연계하여 가장 깊이 있게 탐구하고 싶은 분야는 무엇인가요?"
+            ],
+            local_jasa: [
+                "본교(중동고, 휘문고 등)에 지원하게 된 가장 결정적인 이유는 무엇이며, 입학 후 학교의 특색 프로그램을 어떻게 활용할 계획인가요?",
+                "중학교 생활 중 가장 몰입해서 공부했거나 탐구했던 과목(주제)은 무엇이며, 그 과정에서 어떤 깨달음을 얻었는지 말해보세요.",
+                "자신의 진로를 설정하는 데 가장 큰 영향을 미친 책이나 인물, 혹은 뜻깊었던 경험이 있다면 구체적으로 소개해주세요."
             ],
             science: [
                 "평소 가장 좋아하거나 관심 있는 과학 분야는 무엇이며, 그 이유는 무엇인가요?",
